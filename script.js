@@ -49,4 +49,48 @@ document.addEventListener('DOMContentLoaded', () => {
             cursorGlow.style.height = '300px';
         });
     });
+
+    // Star Rating Interaction
+    const stars = document.querySelectorAll('#stars-container i');
+    const ratingText = document.getElementById('rating-text');
+    let selectedRating = 0;
+
+    const ratingLabels = {
+        1: "Poor - Needs improvement",
+        2: "Fair - Decent tool",
+        3: "Good - Solid performance",
+        4: "Great - Highly recommended",
+        5: "Exceptional - Best in class!"
+    };
+
+    stars.forEach(star => {
+        star.addEventListener('mouseover', () => {
+            const value = parseInt(star.getAttribute('data-value'));
+            highlightStars(value, 'hover');
+        });
+
+        star.addEventListener('mouseout', () => {
+            highlightStars(selectedRating, 'active');
+        });
+
+        star.addEventListener('click', () => {
+            selectedRating = parseInt(star.getAttribute('data-value'));
+            highlightStars(selectedRating, 'active');
+            ratingText.innerText = `You rated: ${ratingLabels[selectedRating]}`;
+            ratingText.style.color = "gold";
+            
+            // Pulse animation on click
+            star.style.transform = "scale(1.5)";
+            setTimeout(() => star.style.transform = "", 200);
+        });
+    });
+
+    function highlightStars(count, className) {
+        stars.forEach((s, idx) => {
+            s.classList.remove('hover', 'active');
+            if (idx < count) {
+                s.classList.add(className);
+            }
+        });
+    }
 });
