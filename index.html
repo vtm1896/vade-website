@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div id="cursor-glow"></div>
@@ -72,42 +73,63 @@
     </section>
     
     <section class="community" id="community">
-        <h2 class="section-title">Community Feedback</h2>
-        <div class="community-grid">
-            <div class="rating-card reveal">
-                <h3>Rate Vade</h3>
-                <div class="stars-rating" id="stars-container">
-                    <i class="fa-solid fa-star" data-value="1"></i>
-                    <i class="fa-solid fa-star" data-value="2"></i>
-                    <i class="fa-solid fa-star" data-value="3"></i>
-                    <i class="fa-solid fa-star" data-value="4"></i>
-                    <i class="fa-solid fa-star" data-value="5"></i>
+        <h2 class="section-title">User Ratings</h2>
+        <div class="rating-dashboard reveal">
+            <div class="rating-summary">
+                <div class="avg-score" id="avg-score">0.0</div>
+                <div class="rating-label" id="rating-label">Excellent</div>
+                <div class="stars-visual" id="stars-visual">
+                    <i class="fa-solid fa-square-check"></i>
+                    <i class="fa-solid fa-square-check"></i>
+                    <i class="fa-solid fa-square-check"></i>
+                    <i class="fa-solid fa-square-check"></i>
+                    <i class="fa-solid fa-square-check"></i>
                 </div>
-                <p id="rating-text">Select your rating</p>
+                <div class="review-count" id="review-count">0 reviews</div>
+                <button class="cta-btn small primary" id="open-rate-btn">Rate Executor</button>
             </div>
             
-            <div class="feedback-container reveal">
-                <div class="giscus-wrapper">
-                    <!-- Giscus Comments Widget will be here -->
-                    <script src="https://giscus.app/client.js"
-                        data-repo="vtm1896/vade-website"
-                        data-repo-id="R_kgDONG2u0A"
-                        data-category="Announcements"
-                        data-category-id="DIC_kwDONG2u0M4CkH_A"
-                        data-mapping="pathname"
-                        data-strict="0"
-                        data-reactions-enabled="1"
-                        data-emit-metadata="0"
-                        data-input-position="top"
-                        data-theme="dark_dimmed"
-                        data-lang="en"
-                        crossorigin="anonymous"
-                        async>
-                    </script>
+            <div class="rating-bars">
+                <div class="bar-row">
+                    <span>5-star</span>
+                    <div class="progress-bg"><div class="progress-fill" id="bar-5" style="width: 0%"></div></div>
+                </div>
+                <div class="bar-row">
+                    <span>4-star</span>
+                    <div class="progress-bg"><div class="progress-fill" id="bar-4" style="width: 0%"></div></div>
+                </div>
+                <div class="bar-row">
+                    <span>3-star</span>
+                    <div class="progress-bg"><div class="progress-fill" id="bar-3" style="width: 0%"></div></div>
+                </div>
+                <div class="bar-row">
+                    <span>2-star</span>
+                    <div class="progress-bg"><div class="progress-fill" id="bar-2" style="width: 0%"></div></div>
+                </div>
+                <div class="bar-row">
+                    <span>1-star</span>
+                    <div class="progress-bg"><div class="progress-fill" id="bar-1" style="width: 0%"></div></div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Rating Modal -->
+    <div id="rate-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>How would you rate Vade?</h3>
+            <div class="stars-rating-input" id="stars-input">
+                <i class="fa-solid fa-star" data-value="1"></i>
+                <i class="fa-solid fa-star" data-value="2"></i>
+                <i class="fa-solid fa-star" data-value="3"></i>
+                <i class="fa-solid fa-star" data-value="4"></i>
+                <i class="fa-solid fa-star" data-value="5"></i>
+            </div>
+            <p id="modal-rating-text">Select stars to submit</p>
+            <button id="submit-rating-btn" class="cta-btn primary" disabled>Submit Rating</button>
+        </div>
+    </div>
 
     <section class="cta" id="download">
         <div class="glass-box reveal">
