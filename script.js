@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error(error.message);
                 }
             } catch (e) {
-                alert("Error submitting rating. Please try again later.");
+                alert("Error submitting rating: " + e.message + "\n\n(If it says 'new row violates row-level security', you need to enable INSERT policies in your Supabase dashboard).");
                 submitBtn.innerText = "Submit Rating";
                 submitBtn.disabled = false;
             }
