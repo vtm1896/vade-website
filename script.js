@@ -79,10 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update Label
         if (labelEl) {
             if (totalCount === 0) labelEl.innerText = "No Ratings Yet";
-            else if (avg >= 4.8) labelEl.innerText = "Exceptional";
-            else if (avg >= 4.0) labelEl.innerText = "Best";
-            else if (avg >= 3.0) labelEl.innerText = "Good";
-            else if (avg >= 2.0) labelEl.innerText = "OK";
+            else if (avg >= 4.5) labelEl.innerText = "Excellent";
+            else if (avg >= 3.5) labelEl.innerText = "Good";
+            else if (avg >= 2.5) labelEl.innerText = "OK";
             else labelEl.innerText = "Bad";
         }
 
