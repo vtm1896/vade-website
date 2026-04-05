@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- SUPABASE RATING SYSTEM ---
     const SUPABASE_URL = 'https://dkwaqolschyikupfrbdu.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrd2Fxb2xzY2h5aWt1cHZyYmR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTE0MTQslmV4cCI6MjA5MDkyNzExNH0.mYQhccDx7ua_Gr5t2OvBqh1BQJedfcrFJiv7oboW0g';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrd2Fxb2xzY2h5aWt1cGZyYmR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTExMTQsImV4cCI6MjA5MDkyNzExNH0.mYQhccDx7ua_Gr5t2OvBqh1BqJedfdcrFJiv7oboW0g';
     const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
     // Database state
