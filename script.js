@@ -30,11 +30,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const seedAvg = 4.8;
 
     async function fetchRatings() {
+        // Show initial seeded state immediately
+        updateDashboard();
+
         if (!supabase) return;
-        const { data, error } = await supabase.from('ratings').select('rating');
-        if (!error && data) {
-            realRatings = data.map(r => r.rating);
-            updateDashboard();
+        try {
+            const { data, error } = await supabase.from('ratings').select('rating');
+            if (!error && data) {
+                realRatings = data.map(r => r.rating);
+                updateDashboard();
+            }
+        } catch (e) {
+            console.error("Supabase fetch failed, showing seeded data only.");
         }
     }
 
@@ -68,16 +75,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         for (let i = 1; i <= 5; i++) {
             const percentage = ((counts[i] / totalCount) * 100).toFixed(0);
-            document.getElementById(`bar-${i}`).style.width = `${percentage}%`;
+            const bar = document.getElementById(`bar-${i}`);
+            if (bar) bar.style.width = `${percentage}%`;
         }
 
         // Update visual stars (green blocks)
         const starsVisual = document.getElementById('stars-visual');
-        starsVisual.innerHTML = '';
-        for (let i = 1; i <= 5; i++) {
-            const icon = document.createElement('i');
-            icon.className = i <= Math.round(avg) ? 'fa-solid fa-square-check' : 'fa-regular fa-square';
-            starsVisual.appendChild(icon);
+        if (starsVisual) {
+            starsVisual.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const icon = document.createElement('i');
+                icon.className = i <= Math.round(avg) ? 'fa-solid fa-square-check' : 'fa-regular fa-square';
+                starsVisual.appendChild(icon);
+            }
         }
     }
 
@@ -90,16 +100,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalText = document.getElementById('modal-rating-text');
     let currentInput = 0;
 
-    openBtn.onclick = () => {
-        if (localStorage.getItem('vade_rated')) {
-            alert("You have already rated Vade! Thank you for your support.");
-            return;
-        }
-        modal.style.display = "block";
-    };
+    if (openBtn) {
+        openBtn.onclick = () => {
+            if (localStorage.getItem('vade_rated')) {
+                alert("You have already rated Vade! Thank you for your support.");
+                return;
+            }
+            modal.classList.add('active');
+        };
+    }
 
-    closeBtn.onclick = () => modal.style.display = "none";
-    window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; };
+    if (closeBtn) {
+        closeBtn.onclick = () => modal.classList.remove('active');
+    }
+
+    window.onclick = (e) => { 
+        if (e.target == modal) modal.classList.remove('active');
+    };
 
     starsInput.forEach(star => {
         star.onmouseover = () => {
@@ -122,24 +139,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    submitBtn.onclick = async () => {
-        if (!supabase || currentInput === 0) return;
-        submitBtn.innerText = "Submitting...";
-        submitBtn.disabled = true;
+    if (submitBtn) {
+        submitBtn.onclick = async () => {
+            if (!supabase || currentInput === 0) return;
+            submitBtn.innerText = "Submitting...";
+            submitBtn.disabled = true;
 
-        const { error } = await supabase.from('ratings').insert([{ rating: currentInput }]);
-        
-        if (!error) {
-            localStorage.setItem('vade_rated', 'true');
-            modal.style.display = "none";
-            fetchRatings(); // Refresh dashboard
-            alert("Thank you! Your rating has been submitted.");
-        } else {
-            alert("Error submitting rating. Please try again later.");
-            submitBtn.innerText = "Submit Rating";
-            submitBtn.disabled = false;
-        }
-    };
+            try {
+                const { error } = await supabase.from('ratings').insert([{ rating: currentInput }]);
+                
+                if (!error) {
+                    localStorage.setItem('vade_rated', 'true');
+                    modal.classList.remove('active');
+                    await fetchRatings(); // Refresh dashboard
+                    setTimeout(() => alert("Thank you! Your rating has been submitted."), 300);
+                } else {
+                    throw new Error(error.message);
+                }
+            } catch (e) {
+                alert("Error submitting rating. Please try again later.");
+                submitBtn.innerText = "Submit Rating";
+                submitBtn.disabled = false;
+            }
+        };
+    }
 
     // Initial load
     fetchRatings();
