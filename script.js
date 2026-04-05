@@ -27,12 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Database state
     let realRatings = [];
-    // Seed data (simulated 12.4k reviews for social proof as requested)
-    const seedCount = 12450;
-    const seedAvg = 4.8;
-
     async function fetchRatings() {
-        // Show initial seeded state immediately
+        // Show initial state immediately
         updateDashboard();
 
         if (!supabase) return;
@@ -43,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateDashboard();
             }
         } catch (e) {
-            console.error("Supabase fetch failed, showing seeded data only.");
+            console.error("Supabase fetch failed.");
         }
     }
 
@@ -62,11 +58,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateDashboard() {
-        const totalCount = realRatings.length + seedCount;
+        const totalCount = realRatings.length;
         
-        // Calculate average
-        const realSum = realRatings.reduce((a, b) => a + b, 0);
-        const avg = ((realSum + (seedCount * seedAvg)) / totalCount).toFixed(1);
+        let avg = 0;
+        if (totalCount > 0) {
+            const sum = realRatings.reduce((a, b) => a + b, 0);
+            avg = (sum / totalCount).toFixed(1);
+        } else {
+            avg = "0.0";
+        }
         
         // Update DOM
         const scoreEl = document.getElementById('avg-score');
@@ -74,29 +74,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const labelEl = document.getElementById('rating-label');
 
         if (scoreEl) scoreEl.innerText = avg;
-        if (countEl) countEl.innerText = `${(totalCount / 1000).toFixed(1)}K reviews`;
+        if (countEl) countEl.innerText = `${totalCount} review${totalCount !== 1 ? 's' : ''}`;
 
         // Update Label
         if (labelEl) {
-            if (avg >= 4.8) labelEl.innerText = "Exceptional";
-            else if (avg >= 4.5) labelEl.innerText = "Excellent";
-            else if (avg >= 4.0) labelEl.innerText = "Great";
-            else labelEl.innerText = "Good";
+            if (totalCount === 0) labelEl.innerText = "No Ratings Yet";
+            else if (avg >= 4.8) labelEl.innerText = "Exceptional";
+            else if (avg >= 4.0) labelEl.innerText = "Best";
+            else if (avg >= 3.0) labelEl.innerText = "Good";
+            else if (avg >= 2.0) labelEl.innerText = "OK";
+            else labelEl.innerText = "Bad";
         }
 
         // Update Bars
         const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
         realRatings.forEach(r => counts[r]++);
-        
-        // Add weighted seed distribution
-        counts[5] += Math.round(seedCount * 0.85);
-        counts[4] += Math.round(seedCount * 0.10);
-        counts[3] += Math.round(seedCount * 0.03);
-        counts[2] += Math.round(seedCount * 0.01);
-        counts[1] += Math.round(seedCount * 0.01);
 
         for (let i = 1; i <= 5; i++) {
-            const percentage = ((counts[i] / totalCount) * 100).toFixed(0);
+            let percentage = 0;
+            if (totalCount > 0) {
+                percentage = ((counts[i] / totalCount) * 100).toFixed(0);
+            }
             const bar = document.getElementById(`bar-${i}`);
             if (bar) bar.style.width = `${percentage}%`;
         }
@@ -105,9 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const starsVisual = document.getElementById('stars-visual');
         if (starsVisual) {
             starsVisual.innerHTML = '';
+            const numericAvg = Number(avg);
             for (let i = 1; i <= 5; i++) {
                 const icon = document.createElement('i');
-                icon.className = i <= Math.round(avg) ? 'fa-solid fa-star' : 'fa-regular fa-star';
+                icon.className = i <= Math.round(numericAvg) && numericAvg > 0 ? 'fa-solid fa-star' : 'fa-regular fa-star';
                 starsVisual.appendChild(icon);
             }
         }
@@ -124,10 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (openBtn) {
         openBtn.onclick = () => {
-            if (localStorage.getItem('vade_rated')) {
-                alert("You have already rated Vade! Thank you for your support.");
-                return;
-            }
             modal.classList.add('active');
         };
     }
